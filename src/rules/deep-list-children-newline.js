@@ -87,46 +87,6 @@ export default {
       firstNode?.loc.end.line === secondNode?.loc.start.line
     );
 
-    // const checkNode = (node) => {
-    //   const children = getChildren(node);
-    //   const childrenCount = countChildrenDeep(children);
-
-    //   console.log(children.length);
-
-    //   if (childrenCount < minChildren || children.length === 1) return;
-
-    //   for (let i = 0; i < children.length; i += 1) {
-    //     const lastTokenOfPreviousProperty = context.sourceCode.getLastToken(children.at(i - 1));
-    //     const firstTokenOfCurrentProperty = context.sourceCode.getFirstToken(children.at(i));
-
-    //     if (isOnSameLine(lastTokenOfPreviousProperty, firstTokenOfCurrentProperty)) {
-    //       context.report({
-    //         node: children[i],
-    //         loc: firstTokenOfCurrentProperty.loc,
-    //         messageId: 'childrenOnNewline',
-    //         data: { childrenCount, minChildren },
-    //         fix(fixer) {
-    //           const comma = context.sourceCode.getTokenBefore(firstTokenOfCurrentProperty);
-    //           const rangeAfterComma = [comma.range[1], firstTokenOfCurrentProperty.range[0]];
-
-    //           const commentAfterComma = context.sourceCode.text
-    //             .slice(rangeAfterComma[0], rangeAfterComma[1])
-    //             .trim();
-    //           if (commentAfterComma) return null;
-
-    //           return fixer.replaceTextRange(rangeAfterComma, '\n');
-    //         },
-    //       });
-    //     }
-    //   }
-    // };
-
-    /// keep-sorted
-
-    const { sourceCode } = context;
-
-    const replaceWhitespaceBetween = (fixer, leftToken, rightToken) => fixer.replaceTextRange([leftToken.range[1], rightToken.range[0]], '\n');
-
     const checkNode = (node) => {
       const children = getChildren(node).filter(Boolean);
       if (children.length < 2) return;
@@ -134,17 +94,17 @@ export default {
       const childrenCount = countChildrenDeep(children);
       if (childrenCount < minChildren) return;
 
-      const openingToken = sourceCode.getFirstToken(node);
-      const closingToken = sourceCode.getLastToken(node);
+      const openingToken = context.sourceCode.getFirstToken(node);
+      const closingToken = context.sourceCode.getLastToken(node);
 
       let previousToken = openingToken;
 
       children.forEach((item, index) => {
-        const currentFirstToken = sourceCode.getFirstToken(item);
+        const currentFirstToken = context.sourceCode.getFirstToken(item);
         if (!currentFirstToken) return;
 
         if (index > 0) {
-          const comma = sourceCode.getTokenBefore(currentFirstToken);
+          const comma = context.sourceCode.getTokenBefore(currentFirstToken);
           if (comma && comma.value === ',') previousToken = comma;
         }
 
@@ -153,20 +113,20 @@ export default {
             node: item,
             loc: currentFirstToken.loc,
             messageId: 'childrenOnNewline',
-            fix: (fixer) => replaceWhitespaceBetween(fixer, previousToken, currentFirstToken),
+            fix: (fixer) => fixer.replaceTextRange([previousToken.range[1], currentFirstToken.range[0]], '\n'),
           });
         }
       });
 
       const lastChild = children.at(-1);
-      const lastChildLastToken = sourceCode.getLastToken(lastChild);
+      const lastChildLastToken = context.sourceCode.getLastToken(lastChild);
 
       if (lastChildLastToken && isOnSameLine(lastChildLastToken, closingToken)) {
         context.report({
           node: lastChild,
           loc: closingToken.loc,
           messageId: 'childrenOnNewline',
-          fix: (fixer) => replaceWhitespaceBetween(fixer, lastChildLastToken, closingToken),
+          fix: (fixer) => fixer.replaceTextRange([lastChildLastToken.range[1], closingToken.range[0]], '\n'),
         });
       }
     };
