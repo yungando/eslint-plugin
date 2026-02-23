@@ -1,0 +1,21 @@
+{
+  "name": "@yungando/eslint-plugin",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "lint": "eslint",
+    "lint:fix": "eslint --fix"
+  },
+  "devDependencies": {
+    "@yungando/eslint-config": "file:../eslint-config",
+    "eslint": "^9.39.2",
+    "eslint-plugin-format": "^1.4.0"
+  }
+}
