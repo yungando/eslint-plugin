@@ -3,7 +3,7 @@ import deepListChildrenNewline from './rules/deep-list-children-newline.js';
 
 const plugin = {
   meta: {
-    name: 'ando',
+    name: 'yungando',
     version: pkg.version,
   },
   // @keep-sorted

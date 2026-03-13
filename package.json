@@ -3,22 +3,27 @@
   "type": "module",
   "version": "1.0.1",
   "description": "",
-  "author": "",
+  "author": "yungando",
   "license": "ISC",
-  "keywords": [],
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin"
+  ],
   "exports": {
     ".": "./src/index.js"
   },
   "scripts": {
+    "test": "vitest",
     "lint": "eslint",
     "lint:fix": "eslint --fix"
   },
   "peerDependencies": {
-    "eslint": "^9.39.2"
+    "eslint": ">=9"
   },
   "devDependencies": {
-    "@yungando/eslint-config": "^1.2.0",
+    "@yungando/eslint-config": "file:../eslint-config",
     "eslint": "^9.39.2",
-    "eslint-plugin-format": "^1.4.0"
+    "vitest": "^4.0.18"
   }
 }
