@@ -88,6 +88,22 @@ export default {
       firstNode?.loc.end.line === secondNode?.loc.start.line
     );
 
+    const replaceRangeWithNewline = (fixer, firstNode, secondNode) => {
+      const tokens = sourceCode.getTokensBetween(
+        firstNode,
+        secondNode,
+        { includeComments: true },
+      );
+
+      const firstComment = tokens
+        .find((token) => token.type === 'Block' || token.type === 'Line');
+
+      const rangeStart = firstNode.range[1];
+      const rangeEnd = firstComment?.range[0] ?? secondNode.range[0];
+
+      return fixer.replaceTextRange([rangeStart, rangeEnd], '\n');
+    };
+
     const checkNode = (node) => {
       const children = getChildren(node).filter(Boolean);
       if (children.length < 2) return;
@@ -114,7 +130,7 @@ export default {
             node: item,
             loc: currentFirstToken.loc,
             messageId: 'childrenOnNewline',
-            fix: (fixer) => fixer.replaceTextRange([previousToken.range[1], currentFirstToken.range[0]], '\n'),
+            fix: (fixer) => replaceRangeWithNewline(fixer, previousToken, currentFirstToken),
           });
         }
       });
@@ -127,7 +143,7 @@ export default {
           node: lastChild,
           loc: closingToken.loc,
           messageId: 'childrenOnNewline',
-          fix: (fixer) => fixer.replaceTextRange([lastChildLastToken.range[1], closingToken.range[0]], '\n'),
+          fix: (fixer) => replaceRangeWithNewline(fixer, lastChildLastToken, closingToken),
         });
       }
     };
