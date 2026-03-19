@@ -46,11 +46,14 @@ export default {
     const unwrapNode = (node) => {
       switch (node.type) {
         case 'Property':
-          return node.value;
+          return unwrapNode(node.value);
 
         case 'SpreadElement':
         case 'RestElement':
-          return node.argument;
+          return unwrapNode(node.argument);
+
+        case 'AssignmentPattern':
+          return unwrapNode(node.right);
 
         default:
           return node;

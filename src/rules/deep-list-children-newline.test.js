@@ -16,59 +16,97 @@ describe('deep-list-children-newline', () => {
     it('should allow lists with up to 3 top level children to be in-line', () => {
       expect('const lol = { lmao: "lmao", haha: "haha", nice: "nice" };').toBeValid();
       expect('const lol = ["lmao", "haha", "nice"];').toBeValid();
+      expect('const { lol, lmao, haha } = nice;').toBeValid();
+      expect('const [lol, lmao, haha] = nice;').toBeValid();
     });
 
     it('should allow lists with up to 3 top level children to newline', () => {
-      expect($(`
+      expect($`
         const lol = {
           lmao: "lmao",
           haha: "haha",
           nice: "nice"
         };
-      `)).toBeValid();
+      `).toBeValid();
 
-      expect($(`
+      expect($`
         const lol = [
           "lmao",
           "haha",
           "nice"
         ];
-      `)).toBeValid();
+      `).toBeValid();
+
+      expect($`
+        const {
+          lol,
+          lmao,
+          haha
+        } = nice;
+      `).toBeValid();
+
+      expect($`
+        const [
+          lol,
+          lmao,
+          haha
+       ] = nice;
+      `).toBeValid();
     });
 
     it('should disallow lists with 4 or more top level children to be in-line', () => {
       expect('const lol = { lmao: "lmao", haha: "haha", nice: "nice", one: "one" };')
-        .toFixTo($(`
+        .toFixTo($`
           const lol = {
             lmao: "lmao",
             haha: "haha",
             nice: "nice",
             one: "one"
           };
-        `));
+        `);
 
       expect('const lol = ["lmao", "haha", "nice", "one"];')
-        .toFixTo($(`
+        .toFixTo($`
           const lol = [
             "lmao",
             "haha",
             "nice",
             "one"
           ];
-        `));
+        `);
+
+      expect('const { lol, lmao, haha, nice } = one;')
+        .toFixTo($`
+          const {
+            lol,
+            lmao,
+            haha,
+            nice
+          } = one;
+        `);
+
+      expect('const [ lol, lmao, haha, nice ] = one;')
+        .toFixTo($`
+          const [
+            lol,
+            lmao,
+            haha,
+            nice
+          ] = one;
+        `);
     });
 
     it('should allow lists with 4 or more top level children to newline', () => {
-      expect($(`
+      expect($`
         const lol = {
           lmao: "lmao",
           haha: "haha",
           nice: "nice",
           one: "one"
         };
-      `)).toBeValid();
+      `).toBeValid();
 
-      expect($(`
+      expect($`
         const lol = [
           "lmao",
           "haha",
@@ -76,26 +114,44 @@ describe('deep-list-children-newline', () => {
           "one",
           "beignet"
         ];
-      `)).toBeValid();
+      `).toBeValid();
+
+      expect($`
+        const {
+          lol,
+          lmao,
+          haha,
+          nice
+        } = one;
+      `).toBeValid();
+
+      expect($`
+        const [
+          lol,
+          lmao,
+          haha,
+          nice
+        ] = one;
+      `).toBeValid();
     });
 
     it('should disallow lists with 4 or more deep children to be in-line', () => {
-      expect('const lol = { lmao: "lmao", haha: ["nice", "one", "beignet", "bri"], huh: "huh" };')
-        .toFixTo($(`
+      expect('const lol = { lmao: "lmao", haha: { nice: "nice", one: "one", beignet: "beignet", bri: "bri" }, huh: "huh" };')
+        .toFixTo($`
           const lol = {
             lmao: "lmao",
-            haha: [
-              "nice",
-              "one",
-              "beignet",
-              "bri"
-            ],
+            haha: {
+              nice: "nice",
+              one: "one",
+              beignet: "beignet",
+              bri: "bri"
+            },
             huh: "huh"
           };
-        `));
+        `);
 
       expect('const lol = ["lmao", ["haha", "nice", "one", "beignet"], "bri"];')
-        .toFixTo($(`
+        .toFixTo($`
           const lol = [
             "lmao",
             [
@@ -106,114 +162,137 @@ describe('deep-list-children-newline', () => {
             ],
             "bri"
           ];
-        `));
+        `);
+
+      expect('const { lol, lmao = { haha, nice, one, beignet }, bri } = huh;')
+        .toFixTo($`
+          const {
+            lol,
+            lmao = {
+              haha,
+              nice,
+              one,
+              beignet
+            },
+            bri
+          } = huh;
+        `);
+
+      expect('const [lol, [lmao, haha, nice, one], beignet] = bri;')
+        .toFixTo($`
+          const [
+            lol,
+            [
+              lmao,
+              haha,
+              nice,
+              one
+            ],
+            beignet
+          ] = bri;
+        `);
     });
 
     it('should allow nested lists with 3 or less children to be in-line when the parent list is newlined', () => {
       expect('const lol = { lmao: "lmao", haha: { nice: "nice", one: "one", beignet: "beignet" }, bri: "bri" };')
-        .toFixTo($(`
+        .toFixTo($`
           const lol = {
             lmao: "lmao",
             haha: { nice: "nice", one: "one", beignet: "beignet" },
             bri: "bri"
           };
-        `));
+        `);
 
       expect('const lol = ["lmao", ["haha", "nice", "one"], "beignet"];')
-        .toFixTo($(`
+        .toFixTo($`
           const lol = [
             "lmao",
             ["haha", "nice", "one"],
             "beignet"
           ];
-        `));
-    });
+        `);
 
-    it('should disallow destructured lists with 4 or more children to be in-line', () => {
-      expect('const [lol, lmao, haha, nice] = one;')
-        .toFixTo($(`
-          const [
-            lol,
-            lmao,
-            haha,
-            nice
-          ] = one;
-        `));
-
-      expect('const { lol, lmao, haha, nice } = one;')
-        .toFixTo($(`
+      expect('const { lol, lmao = { haha, nice, one }, beignet } = huh;')
+        .toFixTo($`
           const {
             lol,
-            lmao,
-            haha,
-            nice
-          } = one;
-        `));
+            lmao = { haha, nice, one },
+            beignet
+          } = huh;
+        `);
+
+      expect('const [lol, [lmao, haha, nice], one] = beignet;')
+        .toFixTo($`
+          const [
+            lol,
+            [lmao, haha, nice],
+            one
+          ] = beignet;
+        `);
     });
 
     it('should count spread and rest list children deeply', () => {
       expect('const lol = ["lmao", ...["haha", "nice", "one"], "beignet"];')
-        .toFixTo($(`
+        .toFixTo($`
           const lol = [
             "lmao",
             ...["haha", "nice", "one"],
             "beignet"
           ];
-        `));
+        `);
 
       expect('const [lol, ...[lmao, haha, nice]] = one;')
-        .toFixTo($(`
+        .toFixTo($`
           const [
             lol,
             ...[lmao, haha, nice]
           ] = one;
-        `));
+        `);
     });
 
     it('should ignore children that exceed the default maxDepth when counting parent lists', () => {
       expect('const lol = ["lmao", [[["haha", "nice", "one", "beignet"]]], "bri"];')
-        .toFixTo($(`
+        .toFixTo($`
           const lol = ["lmao", [[[
             "haha",
             "nice",
             "one",
             "beignet"
           ]]], "bri"];
-        `));
+        `);
     });
 
     it('should preserve comments when inserting newlines between children', () => {
       expect('const lol = ["lmao", /* haha */ "nice", "one", "beignet"];')
-        .toFixTo($(`
+        .toFixTo($`
           const lol = [
             "lmao",
             /* haha */ "nice",
             "one",
             "beignet"
           ];
-        `));
+        `);
     });
 
-    it('should fix lists that are only missing the closing newline', () => {
-      expect($(`
-        const lol = [
-          "lmao",
+    it('should fix lists that are only partially newlined', () => {
+      expect($`
+        const lol = ["lmao",
           "haha",
           "nice",
           "one"];
-      `)).toFixTo($(`
+      `).toFixTo($`
         const lol = [
           "lmao",
           "haha",
           "nice",
           "one"
         ];
-      `));
+      `);
     });
 
     it('should ignore array holes when counting deep children', () => {
       expect('const lol = ["lmao", ["haha", "nice", "one", , "beignet"], "bri"];')
-        .toFixTo($(`
+        .toFixTo($`
           const lol = [
             "lmao",
             [
@@ -224,16 +303,16 @@ describe('deep-list-children-newline', () => {
             ],
             "bri"
           ];
-        `));
+        `);
 
       expect('const lol = ["lmao", ["haha", "nice", , "one"], "beignet"];')
-        .toFixTo($(`
+        .toFixTo($`
           const lol = [
             "lmao",
             ["haha", "nice", , "one"],
             "beignet"
           ];
-        `));
+        `);
     });
   });
 
@@ -249,83 +328,13 @@ describe('deep-list-children-newline', () => {
     it('should allow lists with up to 5 top level children to be in-line', () => {
       expect('const lol = { lmao: "lmao", haha: "haha", nice: "nice", one: "one", beignet: "beignet" };').toBeValid();
       expect('const lol = ["lmao", "haha", "nice", "one", "beignet"];').toBeValid();
-    });
-
-    it('should allow lists with up to 5 top level children to newline', () => {
-      expect($(`
-        const lol = {
-          lmao: "lmao",
-          haha: "haha",
-          nice: "nice",
-          one: "one",
-          beignet: "beignet",
-        };
-      `)).toBeValid();
-
-      expect($(`
-        const lol = [
-          "lmao",
-          "haha",
-          "nice",
-          "one",
-          "beignet"
-        ];
-      `)).toBeValid();
-    });
-
-    it('should disallow lists with 6 or more top level children to be in-line', () => {
-      expect('const lol = { lmao: "lmao", haha: "haha", nice: "nice", one: "one", beignet: "beignet", bri: "bri" };')
-        .toFixTo($(`
-          const lol = {
-            lmao: "lmao",
-            haha: "haha",
-            nice: "nice",
-            one: "one",
-            beignet: "beignet",
-            bri: "bri"
-          };
-        `));
-
-      expect('const lol = ["lmao", "haha", "nice", "one", "beignet", "bri"];')
-        .toFixTo($(`
-          const lol = [
-            "lmao",
-            "haha",
-            "nice",
-            "one",
-            "beignet",
-            "bri"
-          ];
-        `));
-    });
-
-    it('should allow lists with 6 or more top level children to newline', () => {
-      expect($(`
-        const lol = {
-          lmao: "lmao",
-          haha: "haha",
-          nice: "nice",
-          one: "one",
-          beignet: "beignet",
-          bri: "bri"
-        };
-      `)).toBeValid();
-
-      expect($(`
-        const lol = [
-          "lmao",
-          "haha",
-          "nice",
-          "one",
-          "beignet",
-          "bri"
-        ];
-      `)).toBeValid();
+      expect('const { lol, lmao, haha, nice, one } = beignet;').toBeValid();
+      expect('const [lol, lmao, haha, nice, one] = beignet;').toBeValid();
     });
 
     it('should disallow lists with 6 or more deep children to be in-line', () => {
       expect('const lol = { lmao: "lmao", haha: { nice: "nice", one: "one", beignet: "beignet", bri: "bri", huh: "huh", panini: "panini" }, popeye: "popeye" };')
-        .toFixTo($(`
+        .toFixTo($`
           const lol = {
             lmao: "lmao",
             haha: {
@@ -338,10 +347,10 @@ describe('deep-list-children-newline', () => {
             },
             popeye: "popeye"
           };
-        `));
+        `);
 
       expect('const lol = ["lmao", ["haha", "nice", "one", "beignet", "bri", "huh"], "panini"];')
-        .toFixTo($(`
+        .toFixTo($`
           const lol = [
             "lmao",
             [
@@ -354,27 +363,7 @@ describe('deep-list-children-newline', () => {
             ],
             "panini"
           ];
-        `));
-    });
-
-    it('should allow nested lists with 5 or less children to be in-line when the parent list is newlined', () => {
-      expect('const lol = { lmao: "lmao", haha: { nice: "nice", one: "one", beignet: "beignet", bri: "bri", huh: "huh", }, panini: "panini" };')
-        .toFixTo($(`
-          const lol = {
-            lmao: "lmao",
-            haha: { nice: "nice", one: "one", beignet: "beignet", bri: "bri", huh: "huh", },
-            panini: "panini"
-          };
-        `));
-
-      expect('const lol = ["lmao", ["haha", "nice", "one", "beignet", "bri"], "huh"];')
-        .toFixTo($(`
-          const lol = [
-            "lmao",
-            ["haha", "nice", "one", "beignet", "bri"],
-            "huh"
-          ];
-        `));
+        `);
     });
   });
 
@@ -389,24 +378,24 @@ describe('deep-list-children-newline', () => {
 
     it('should ignore nested children when counting the parent list', () => {
       expect('const lol = { lmao: "lmao", haha: { nice: "nice", one: "one", beignet: "beignet", bri: "bri" }, huh: "huh" };')
-        .toFixTo($(`
+        .toFixTo($`
           const lol = { lmao: "lmao", haha: {
             nice: "nice",
             one: "one",
             beignet: "beignet",
             bri: "bri"
           }, huh: "huh" };
-        `));
+        `);
 
       expect('const lol = ["lmao", ["haha", "nice", "one", "beignet"], "bri"];')
-        .toFixTo($(`
+        .toFixTo($`
           const lol = ["lmao", [
             "haha",
             "nice",
             "one",
             "beignet"
           ], "bri"];
-        `));
+        `);
     });
   });
 });

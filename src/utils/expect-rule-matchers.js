@@ -1,6 +1,6 @@
 import { Linter } from 'eslint';
 import { expect } from 'vitest';
-import plugin from './src/index.js';
+import plugin from '../plugin.js';
 
 const RuleHarnessNotConfiguredError = {
   pass: false,

@@ -1,15 +1,5 @@
-import pkg from '../package.json' with { type: 'json' };
-import deepListChildrenNewline from './rules/deep-list-children-newline.js';
+import plugin from './plugin.js';
 
-const plugin = {
-  meta: {
-    name: 'yungando',
-    version: pkg.version,
-  },
-  // @keep-sorted
-  rules: {
-    'deep-list-children-newline': deepListChildrenNewline,
-  },
-};
-
+export { dedent } from './utils/dedent.js';
+export { resetRuleMatchers, setupRuleMatchers, toBeValid, toFixTo } from './utils/expect-rule-matchers.js';
 export default plugin;
