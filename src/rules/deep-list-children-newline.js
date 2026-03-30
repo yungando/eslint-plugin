@@ -18,7 +18,6 @@ export default {
     },
   },
   create: (context) => {
-    const { sourceCode } = context;
     const [{ minChildren, maxDepth }] = context.options;
 
     const LIST_TYPES = new Set([
@@ -92,7 +91,7 @@ export default {
     );
 
     const replaceRangeWithNewline = (fixer, firstNode, secondNode) => {
-      const tokens = sourceCode.getTokensBetween(
+      const tokens = context.sourceCode.getTokensBetween(
         firstNode,
         secondNode,
         { includeComments: true },
@@ -114,17 +113,17 @@ export default {
       const childrenCount = countChildrenDeep(children);
       if (childrenCount < minChildren) return;
 
-      const openingToken = sourceCode.getFirstToken(node);
-      const closingToken = sourceCode.getLastToken(node);
+      const openingToken = context.sourceCode.getFirstToken(node);
+      const closingToken = context.sourceCode.getLastToken(node);
 
       let previousToken = openingToken;
 
       children.forEach((item, index) => {
-        const currentFirstToken = sourceCode.getFirstToken(item);
+        const currentFirstToken = context.sourceCode.getFirstToken(item);
         if (!currentFirstToken) return;
 
         if (index > 0) {
-          const comma = sourceCode.getTokenBefore(currentFirstToken);
+          const comma = context.sourceCode.getTokenBefore(currentFirstToken);
           if (comma && comma.value === ',') previousToken = comma;
         }
 
