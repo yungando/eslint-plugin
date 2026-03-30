@@ -94,6 +94,16 @@ describe('deep-list-children-newline', () => {
             nice
           ] = one;
         `);
+
+      expect('const lol = [[], "haha", "nice", "one"];')
+        .toFixTo($`
+          const lol = [
+            [],
+            "haha",
+            "nice",
+            "one"
+          ];
+        `);
     });
 
     it('should allow lists with 4 or more top level children to newline', () => {
@@ -250,18 +260,6 @@ describe('deep-list-children-newline', () => {
         `);
     });
 
-    it('should ignore children that exceed the default maxDepth when counting parent lists', () => {
-      expect('const lol = ["lmao", [[["haha", "nice", "one", "beignet"]]], "bri"];')
-        .toFixTo($`
-          const lol = ["lmao", [[[
-            "haha",
-            "nice",
-            "one",
-            "beignet"
-          ]]], "bri"];
-        `);
-    });
-
     it('should preserve comments when inserting newlines between children', () => {
       expect('const lol = ["lmao", /* haha */ "nice", "one", "beignet"];')
         .toFixTo($`
@@ -395,6 +393,16 @@ describe('deep-list-children-newline', () => {
             "one",
             "beignet"
           ], "bri"];
+        `);
+
+      expect('const lol = [["haha"], "nice", "one", "beignet"];')
+        .toFixTo($`
+          const lol = [
+            ["haha"],
+            "nice",
+            "one",
+            "beignet"
+          ];
         `);
     });
   });

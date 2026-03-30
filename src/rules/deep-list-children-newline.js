@@ -59,13 +59,6 @@ export default {
       }
     };
 
-    const shouldCountSelf = (node, nestedNode) => {
-      const isListType = LIST_TYPES.has(nestedNode.type);
-      const isProperty = node.type === 'Property';
-
-      return !isListType || isProperty;
-    };
-
     const countChildrenDeep = (items, depth = 0) => {
       if (!items || depth > maxDepth) return 0;
       let count = 0;
@@ -78,8 +71,7 @@ export default {
           count += countChildrenDeep(children, depth + 1);
         }
 
-        if (shouldCountSelf(item, nestedNode)) count += 1;
-
+        count += 1;
         if (count >= minChildren) break;
       }
 
