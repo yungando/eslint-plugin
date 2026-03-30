@@ -108,16 +108,15 @@ export default {
       const openingToken = context.sourceCode.getFirstToken(node);
       const closingToken = context.sourceCode.getLastToken(node);
 
-      let previousToken = openingToken;
-
-      children.forEach((item, index) => {
+      for (const [index, item] of children.entries()) {
         const currentFirstToken = context.sourceCode.getFirstToken(item);
-        if (!currentFirstToken) return;
+        if (!currentFirstToken) continue;
 
-        if (index > 0) {
-          const comma = context.sourceCode.getTokenBefore(currentFirstToken);
-          if (comma && comma.value === ',') previousToken = comma;
-        }
+        const previousToken = index === 0
+          ? openingToken
+          : context.sourceCode.getTokenBefore(currentFirstToken);
+
+        if (!previousToken) continue;
 
         if (isOnSameLine(previousToken, currentFirstToken)) {
           context.report({
@@ -127,7 +126,7 @@ export default {
             fix: (fixer) => replaceRangeWithNewline(fixer, previousToken, currentFirstToken),
           });
         }
-      });
+      }
 
       const lastChild = children.at(-1);
       const lastChildLastToken = context.sourceCode.getLastToken(lastChild);
