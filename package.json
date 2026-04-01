@@ -1,7 +1,7 @@
 {
   "name": "@yungando/eslint-plugin",
   "type": "module",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "author": "yungando",
   "license": "ISC",
@@ -22,7 +22,7 @@
     "eslint": ">=9"
   },
   "devDependencies": {
-    "@yungando/eslint-config": "file:../eslint-config",
+    "@yungando/eslint-config": "1.2.3",
     "eslint": "^9.39.2",
     "vitest": "^4.0.18"
   }
