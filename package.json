@@ -22,7 +22,7 @@
     "eslint": ">=9"
   },
   "devDependencies": {
-    "@yungando/eslint-config": "1.2.3",
+    "@yungando/eslint-config": "1.2.4",
     "eslint": "^9.39.2",
     "vitest": "^4.0.18"
   }
