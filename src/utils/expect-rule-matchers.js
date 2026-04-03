@@ -1,6 +1,6 @@
 import { Linter } from 'eslint';
 import { expect } from 'vitest';
-import plugin from '../plugin.js';
+import plugin from '../index.js';
 
 const RuleHarnessNotConfiguredError = {
   pass: false,
@@ -74,7 +74,7 @@ const toFixTo = (received, expected) => {
 
       return {
         pass: false,
-        message: () => `input string failed to lint:\n${JSON.stringify(error, null, 2)}`,
+        message: () => `input string failed to lint:\n${JSON.stringify(error, undefined, 2)}`,
       };
     }
 
