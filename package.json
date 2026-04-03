@@ -5,6 +5,10 @@
   "description": "",
   "author": "yungando",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yungando/eslint-plugin.git"
+  },
   "keywords": [
     "eslint",
     "eslintplugin",
