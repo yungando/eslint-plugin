@@ -1,7 +1,5 @@
 # @yungando/eslint-plugin
 
-Opinionated ESLint rules for newline consistency.
-
 ## Installation
 
 ```bash
@@ -27,53 +25,65 @@ export default [
 
 ## Rules
 
-- `yungando/deep-list-children-newline` - Enforce placing list children on separate lines.
+- `yungando/deep-list-children-newline` - enforce placing list children on new lines.
 
 ---
 
 ### deep-list-children-newline
 
-Enforce placing list children on separate lines when a list has enough children, including nested children.
-
-#### Rule Details
+Ensures objects, arrays, object patterns, and array patterns become multiline once the number of nested children reach the threshold.
 
 <!-- eslint-skip -->
 
 ```js
-// 👎 bad
-const foo = {
-  bar: 'baz',
-  qux: { a: 1, b: 2, c: 3, d: 4 },
-  fez: 'fum'
-}
-```
+// bad: disallowed
+const badObject = { foo: 'foo', bar: 'bar', baz: 'baz', qux: 'qux' };
 
-<!-- eslint-skip -->
+// fix: auto-fixed form
+const badObject = {
+  foo: 'foo',
+  bar: 'bar',
+  baz: 'baz',
+  qux: 'qux'
+};
 
-```js
-// 👍 good
-const foo = {
-  bar: 'baz',
-  qux: {
+// bad: nested children also count toward the limit
+const invalidNested = { foo: 'foo', bar: { a: 1, b: 2, c: 3, d: 4 }, baz: 'baz' };
+
+// fix: becomes multiline because the nested object has four children
+const object = {
+  foo: 'foo',
+  bar: {
     a: 1,
     b: 2,
     c: 3,
     d: 4
   },
-  fez: 'fum'
-}
-
-// 👍 good
-const foo = { bar: 'baz', qux: { a: 1, b: 2, c: 3 }, fez: 'fum' }
+  baz: 'baz'
+};
 ```
 
-This rule checks objects, arrays, object patterns, and array patterns.
+- Multi-line parents can keep shorter nested lists inline:
 
-By default, it requires each child to be on its own line when a list reaches `4` children. Nested lists are counted too, up to a depth of `2`.
+<!-- eslint-skip -->
 
-That means a parent list can become multiline because one of its children expands into a larger nested list.
+```js
+const object = {
+  foo: 'foo',
+  bar: { a: 1, b: 2, c: 3 },
+  baz: 'baz'
+};
+
+const array = [
+  'foo',
+  ['bar', 'baz', 'qux'],
+  'quux'
+];
+```
 
 #### Options
+
+Pass an options object to tune the thresholds (defaults shown):
 
 <!-- eslint-skip -->
 
@@ -86,29 +96,58 @@ That means a parent list can become multiline because one of its children expand
 
 ##### `minChildren`
 
-Minimum number of children required before the list must be multiline.
+Raise the inline allowance before multiline wrapping kicks in. With `minChildren: 6`, five siblings can stay inline, but deep children are still counted:
 
 <!-- eslint-skip -->
 
 ```js
-// `minChildren: 6`
-const foo = { a: 1, b: 2, c: 3, d: 4, e: 5 }
+// ok when minChildren: 6
+const object = { foo: 'foo', bar: 'bar', baz: 'baz', qux: 'qux', quux: 'quux' };
+
+// bad: becomes multiline because the nested object has six entries
+const object = {
+  foo: 'foo',
+  bar: {
+    a: 1,
+    b: 2,
+    c: 3,
+    d: 4,
+    e: 5,
+    f: 6
+  },
+  baz: 'baz'
+};
 ```
 
 ##### `maxDepth`
 
-Maximum nesting depth used when counting children.
-
-Set `maxDepth: 0` to count only the current list and ignore nested children.
+Control how deep nested children are counted. With `maxDepth: 0`, only the direct siblings matter:
 
 <!-- eslint-skip -->
 
 ```js
-// `maxDepth: 0`
-const foo = { a: 1, b: { c: 3, d: 4, e: 5, f: 6 }, g: 7 }
+// ok when maxDepth: 0
+const object = {
+  foo: 'foo',
+  bar: {
+    a: 1,
+    b: 2,
+    c: 3,
+    d: 4
+  },
+  baz: 'baz'
+};
+
+// bad: four direct children
+const object = {
+  foo: ['bar'],
+  baz: 'baz',
+  qux: 'qux',
+  quux: 'quux'
+};
 ```
 
-#### Rule Conflicts
+#### Rule conflicts
 
 This rule may conflict with newline rules that enforce different wrapping behavior for objects and arrays, such as `object-curly-newline`, `object-property-newline`, or `array-element-newline`.
 
