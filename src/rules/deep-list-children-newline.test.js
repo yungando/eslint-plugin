@@ -1,12 +1,12 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { dedent as $ } from '../utils/dedent.js';
 import { resetRuleMatchers, setupRuleMatchers } from '../utils/expect-rule-matchers.js';
-import rule from './deep-list-children-newline.js';
+import deepListChildrenNewline from './deep-list-children-newline.js';
 
 describe('deep-list-children-newline', () => {
   describe('when the rule is using the default options', () => {
     beforeAll(() => {
-      setupRuleMatchers(rule);
+      setupRuleMatchers(deepListChildrenNewline);
     });
 
     afterAll(() => {
@@ -241,6 +241,32 @@ describe('deep-list-children-newline', () => {
         `);
     });
 
+    it('should disallow a single keyed wrapper with 4 or more deep children to be in-line', () => {
+      expect('const lol = { lmao: ["haha", "nice", "one", "beignet"] };')
+        .toFixTo($`
+          const lol = {
+            lmao: [
+              "haha",
+              "nice",
+              "one",
+              "beignet"
+            ]
+          };
+        `);
+    });
+
+    it('should allow a single unkeyed wrapper with 4 or more deep children to be in-line', () => {
+      expect('const lol = [["lmao", "haha", "nice", "one"]];')
+        .toFixTo($`
+          const lol = [[
+            "lmao",
+            "haha",
+            "nice",
+            "one"
+          ]];
+        `);
+    });
+
     it('should count spread and rest list children deeply', () => {
       expect('const lol = ["lmao", ...["haha", "nice", "one"], "beignet"];')
         .toFixTo($`
@@ -316,7 +342,7 @@ describe('deep-list-children-newline', () => {
 
   describe('when the rule has minChildren set to 6', () => {
     beforeAll(() => {
-      setupRuleMatchers(rule, { minChildren: 6 });
+      setupRuleMatchers(deepListChildrenNewline, { minChildren: 6 });
     });
 
     afterAll(() => {
@@ -367,7 +393,7 @@ describe('deep-list-children-newline', () => {
 
   describe('when the rule has maxDepth set to 0', () => {
     beforeAll(() => {
-      setupRuleMatchers(rule, { maxDepth: 0 });
+      setupRuleMatchers(deepListChildrenNewline, { maxDepth: 0 });
     });
 
     afterAll(() => {

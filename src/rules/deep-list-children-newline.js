@@ -42,6 +42,10 @@ export default {
       }
     };
 
+    const shouldSkipSingleChild = (children) => (
+      children.length === 1 && children.at(0).type !== 'Property'
+    );
+
     const unwrapNode = (node) => {
       switch (node.type) {
         case 'Property':
@@ -100,7 +104,7 @@ export default {
 
     const checkNode = (node) => {
       const children = getChildren(node).filter(Boolean);
-      if (children.length < 2) return;
+      if (!children || shouldSkipSingleChild(children)) return;
 
       const childrenCount = countChildrenDeep(children);
       if (childrenCount < minChildren) return;
